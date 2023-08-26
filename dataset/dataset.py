@@ -86,8 +86,8 @@ def random_warp(image):
 
 class FaceDataset(Dataset):
     def __init__(self, data_path):
-        self.image_files_src = glob(data_path + "src/aligned/*.jpg")
-        self.image_files_dst = glob(data_path + "dst/aligned/*.jpg")
+        self.image_files_src = glob(data_path + "/src/aligned/*.jpg")
+        self.image_files_dst = glob(data_path + "/dst/aligned/*.jpg")
 
     def __len__(self):
         return min(len(self.image_files_src), len(self.image_files_dst))
