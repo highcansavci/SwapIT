@@ -15,7 +15,7 @@ import torch
 import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import transforms
-from torch utils.data import DataLoader
+from torch.utils.data import DataLoader
 from config.config import Config
 from dataset.dataset import FaceDataset
 
