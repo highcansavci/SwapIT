@@ -23,8 +23,10 @@ config_args = Config()
 plt.style.use("dark_background")
 px = 1 / plt.rcParams["figure.dpi"]
 
+
 def pixel_norm(x, dim=-1):
     return x / torch.sqrt(torch.mean(x ** 2, dim=dim, keepdim=True) + 1e-6)
+
 
 def depth2space(x, size=2):
     batch_size, channels, height, width = x.shape
@@ -32,9 +34,10 @@ def depth2space(x, size=2):
     out_width = size * width
     out_channels = channels // (size * size)
     x = x.reshape((-1, size, size, out_channels, height, width))
-    x = x.permute((0, 3,  4, 1, 5, 2))
+    x = x.permute((0, 3, 4, 1, 5, 2))
     x = x.reshape((-1, out_channels, out_height, out_width))
     return x
+
 
 class Depth2Space(nn.Module):
     def __init__(self):
@@ -43,19 +46,20 @@ class Depth2Space(nn.Module):
     def forward(self, x, size=2):
         return depth2space(x, size)
 
+
 class WSConv2d(nn.Module):
-  def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=1):
-    super(WSConv2d, self).__init__()
-    self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding)
-    self.scale = (2 / (in_channels * (kernel_size ** 2))) ** 0.5
-    self.bias = self.conv.bias
-    self.conv.bias = None
+    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=1):
+        super(WSConv2d, self).__init__()
+        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding)
+        self.scale = (2 / (in_channels * (kernel_size ** 2))) ** 0.5
+        self.bias = self.conv.bias
+        self.conv.bias = None
 
-    nn.init.normal_(self.conv.weight)
-    nn.init.zeros_(self.bias)
+        nn.init.normal_(self.conv.weight)
+        nn.init.zeros_(self.bias)
 
-  def forward(self, x):
-    return self.conv(x * self.scale) + self.bias.view(1, self.bias.shape[0], 1, 1)
+    def forward(self, x):
+        return self.conv(x * self.scale) + self.bias.view(1, self.bias.shape[0], 1, 1)
 
 
 class Encoder(nn.Module):
@@ -80,18 +84,19 @@ class Encoder(nn.Module):
 
 
 class WSConv2dSame(nn.Module):
-  def __init__(self, in_channels, out_channels, kernel_size=3, padding="same"):
-    super(WSConv2dSame, self).__init__()
-    self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding="same")
-    self.scale = (2 / (in_channels * (kernel_size ** 2))) ** 0.5
-    self.bias = self.conv.bias
-    self.conv.bias = None
+    def __init__(self, in_channels, out_channels, kernel_size=3, padding="same"):
+        super(WSConv2dSame, self).__init__()
+        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding="same")
+        self.scale = (2 / (in_channels * (kernel_size ** 2))) ** 0.5
+        self.bias = self.conv.bias
+        self.conv.bias = None
 
-    nn.init.normal_(self.conv.weight)
-    nn.init.zeros_(self.bias)
+        nn.init.normal_(self.conv.weight)
+        nn.init.zeros_(self.bias)
 
-  def forward(self, x):
-    return self.conv(x * self.scale) + self.bias.view(1, self.bias.shape[0], 1, 1)
+    def forward(self, x):
+        return self.conv(x * self.scale) + self.bias.view(1, self.bias.shape[0], 1, 1)
+
 
 class Upsample(nn.Module):
     def __init__(self, in_channels, out_channels):
@@ -121,19 +126,21 @@ class ResBlock(nn.Module):
         x = nn.functional.leaky_relu(x, 0.2)
         return x
 
+
 class WSLinear(nn.Module):
-  def __init__(self, in_features, out_features):
-    super(WSLinear, self).__init__()
-    self.linear = nn.Linear(in_features, out_features)
-    self.scale = (2 / in_features) ** 0.5
-    self.bias = self.linear.bias
-    self.linear.bias = None
+    def __init__(self, in_features, out_features):
+        super(WSLinear, self).__init__()
+        self.linear = nn.Linear(in_features, out_features)
+        self.scale = (2 / in_features) ** 0.5
+        self.bias = self.linear.bias
+        self.linear.bias = None
 
-    nn.init.normal_(self.linear.weight)
-    nn.init.zeros_(self.bias)
+        nn.init.normal_(self.linear.weight)
+        nn.init.zeros_(self.bias)
 
-  def forward(self, x):
-    return self.linear(x * self.scale) + self.bias
+    def forward(self, x):
+        return self.linear(x * self.scale) + self.bias
+
 
 class Inter(nn.Module):
     def __init__(self):
@@ -197,10 +204,11 @@ def sdsim(first_image, second_image, window_size=11):
 
     mu1_squared = mu1 ** 2
     mu2_squared = mu2 ** 2
-    mu_cov  = mu1 * mu2
+    mu_cov = mu1 * mu2
 
     sigma1_squared = nn.functional.conv2d(first_image * first_image, window, padding=pad, groups=3) - mu1_squared + eps
-    sigma2_squared = nn.functional.conv2d(second_image * second_image, window, padding=pad, groups=3) - mu2_squared + eps
+    sigma2_squared = nn.functional.conv2d(second_image * second_image, window, padding=pad,
+                                          groups=3) - mu2_squared + eps
     sigma_cov = nn.functional.conv2d(first_image * second_image, window, padding=pad, groups=3) - mu_cov + eps
 
     c1 = 0.01 ** 2
@@ -238,7 +246,8 @@ def draw_results(reconstruct_src, target_src, reconstruct_dst, target_dst, fake,
     final_image = final_image[..., ::-1]  # convert to BGR
     return final_image
 
-def train(data_path:str, model_name:"SwapIt", new_model=False, saved_models_dir="saved_model"):
+
+def train(data_path: str, model_name: "SwapIt", new_model=False, saved_models_dir="saved_model"):
     saved_models_dir_ = Path(saved_models_dir)
     learning_rate = config_args.config["model"]["learning_rate"]
     device = config_args.config["device"]
@@ -251,7 +260,8 @@ def train(data_path:str, model_name:"SwapIt", new_model=False, saved_models_dir=
     decoder_src = Decoder().to(device)
     decoder_dst = Decoder().to(device)
 
-    optim_encoder = torch.optim.Adam([{"params": encoder.parameters()}, {"params": inter.parameters()}], lr=learning_rate)
+    optim_encoder = torch.optim.Adam([{"params": encoder.parameters()}, {"params": inter.parameters()}],
+                                     lr=learning_rate)
     optim_decoder_src = torch.optim.Adam(decoder_src.parameters(), lr=learning_rate)
     optim_decoder_dst = torch.optim.Adam(decoder_dst.parameters(), lr=learning_rate)
     criterion = nn.MSELoss()
@@ -338,7 +348,7 @@ def train(data_path:str, model_name:"SwapIt", new_model=False, saved_models_dir=
                 cv2.waitKey(1)
 
             k = cv2.waitKey(1)
-            if k  == ord('q'):
+            if k == ord('q'):
                 saved_model['epoch'] = epoch
                 saved_model['encoder'] = encoder.state_dict()
                 saved_model['inter'] = inter.state_dict()
@@ -363,4 +373,3 @@ def train(data_path:str, model_name:"SwapIt", new_model=False, saved_models_dir=
         mean_loss_src.append(mean_epoch_loss_src.mean())
         mean_loss_dst.append(mean_epoch_loss_dst.mean())
     cv2.destroyAllWindows()
-

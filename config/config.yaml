@@ -22,7 +22,7 @@ main:
   eval_camera: False
   model_name: "SwapIt"
   checkpoint: True
-  data_root: "./data"
+  data_root: "~/SwapIT/data"
 
 
 
