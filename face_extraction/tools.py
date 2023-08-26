@@ -29,14 +29,13 @@ def extract_frames_from_video(video_path: Union[str, Path], output_folder: Union
             break
 
         if extract_frame_counter % (frames_to_skip + 1) == 0:
-            cv2.imwrite(str(output_folder_ / f"{saved_frame_counter:05d}.jpg"))
+            cv2.imwrite(str(output_folder / f'{saved_frame_counter:05d}.jpg'), frame, [cv2.IMWRITE_JPEG_QUALITY, 90])
             saved_frame_counter += 1
 
         extract_frame_counter += 1
 
         print(f"{saved_frame_counter} of {extract_frame_counter} frames saved successfully.")
         video_capture.release()
-        cv2.destroyAllWindows()
 
 
 def extract_align_face_from_img(input_dir: Union[str, Path], desired_face_width: int = 256) -> None:
