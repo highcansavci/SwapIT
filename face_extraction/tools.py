@@ -6,6 +6,9 @@ import numpy as np
 from tqdm import tqdm
 from typing import Union
 import os, random
+from config.config import Config
+
+config = Config()
 
 
 def extract_frames_from_video(video_path: Union[str, Path], output_folder: Union[str, Path],
@@ -49,7 +52,7 @@ def extract_align_face_from_img(input_dir: Union[str, Path], desired_face_width:
     image_height = image.shape[0]
     image_width = image.shape[1]
 
-    detector = FaceExtractor((image_width, image_height))
+    detector = FaceExtractor((image_width, image_height), config)
 
     for image_path in tqdm(list(input_dir_.glob("*.jpg"))):
         image = cv2.imread(str(image_path))
@@ -63,11 +66,11 @@ def extract_align_face_from_img(input_dir: Union[str, Path], desired_face_width:
 
 
 class FaceExtractor:
-    def __init__(self, image_size, config):
-        detection_model_path = Path(config.config["detection"]["model_path"])
+    def __init__(self, image_size, config_):
+        detection_model_path = Path(config_.config["detection"]["model_path"])
         if not detection_model_path.exists():
             detection_model_path.parent.mkdir(parents=True, exist_ok=True)
-            url = config.config["detection"]["url_path"]
+            url = config_.config["detection"]["url_path"]
             print('Downloading Face Detection Model...')
             filename, headers = urlretrieve(url, filename=str(detection_model_path))
             print("Finished Downloading...")
