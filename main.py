@@ -34,7 +34,7 @@ if extract_and_align_dst:
     fet.extract_align_face_from_img(input_dir=dst_processing_folder, desired_face_width=256)
 
 if train:
-    fs.train(str(data_root), model_name, new_model, saved_models_dir='saved_model')
+    fs.train(str(data_root.absolute()), model_name, new_model, saved_models_dir='saved_model')
 
 if eval_video:
     generate_video(dst_processing_folder, model_name, saved_models_dir='saved_model')
