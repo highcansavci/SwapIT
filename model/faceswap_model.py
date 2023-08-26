@@ -249,6 +249,7 @@ def draw_results(reconstruct_src, target_src, reconstruct_dst, target_dst, fake,
 
 def train(data_path: str, model_name: "SwapIt", new_model=False, saved_models_dir="saved_model"):
     saved_models_dir_ = Path(saved_models_dir)
+    print(f"Data Path: {str(data_path)}")
     learning_rate = config_args.config["model"]["learning_rate"]
     device = config_args.config["device"]
     batch_size = config_args.config["model"]["batch_size"]
