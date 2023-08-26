@@ -93,7 +93,7 @@ class FaceDataset(Dataset):
         return min(len(self.image_files_src), len(self.image_files_dst))
 
     def __getitem__(self, idx):
-        img_shape = config_args.config["model"]["image_shape"]
+        img_shape = int(config_args.config["model"]["image_shape"])
         img_file_src = choice(self.image_files_src)
         img_file_dst = choice(self.image_files_dst)
         img_src = np.asarray(Image.open(img_file_src).resize((2 * img_shape, 2 * img_shape)))

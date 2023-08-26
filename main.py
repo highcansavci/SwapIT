@@ -7,14 +7,14 @@ from config.config import Config
 
 config = Config()
 
-extract_and_align_src = config.config["main"]["extract_and_align_src"]
-extract_and_align_dst = config.config["main"]["extract_and_align_dst"]
-train = config.config["main"]["train"]
-eval_video = config.config["main"]["eval_video"]
-eval_camera = config.config["main"]["eval_camera"]
+extract_and_align_src = bool(config.config["main"]["extract_and_align_src"])
+extract_and_align_dst = bool(config.config["main"]["extract_and_align_dst"])
+train = bool(config.config["main"]["train"])
+eval_video = bool(config.config["main"]["eval_video"])
+eval_camera = bool(config.config["main"]["eval_camera"])
 
 model_name = config.config["main"]["model_name"]
-new_model = not config.config["main"]["checkpoint"]
+new_model = not bool(config.config["main"]["checkpoint"])
 
 data_root = Path(config.config["main"]["data_root"])
 src_video_path = data_root / 'data_src.mp4'

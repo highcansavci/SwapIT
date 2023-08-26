@@ -18,7 +18,7 @@ def generate_camera(model_name="SwapIt", saved_models_dir="saved_model"):
     face_masker = FaceMasking(config_args)
 
     device = config_args.config["device"]
-    config_image_size = config_args.config["model"]["image_shape"]
+    config_image_size = int(config_args.config["model"]["image_shape"])
     encoder = Encoder().to(device)
     inter = Inter().to(device)
     decoder = Decoder().to(device)

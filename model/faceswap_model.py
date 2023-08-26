@@ -249,10 +249,9 @@ def draw_results(reconstruct_src, target_src, reconstruct_dst, target_dst, fake,
 
 def train(data_path: str, model_name: "SwapIt", new_model=False, saved_models_dir="saved_model"):
     saved_models_dir_ = Path(saved_models_dir)
-    print(f"Data Path: {str(data_path)}")
-    learning_rate = config_args.config["model"]["learning_rate"]
+    learning_rate = float(config_args.config["model"]["learning_rate"])
     device = config_args.config["device"]
-    batch_size = config_args.config["model"]["batch_size"]
+    batch_size = int(config_args.config["model"]["batch_size"])
     dataset = FaceDataset(data_path)
     data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, collate_fn=dataset.collate_fn)
 
