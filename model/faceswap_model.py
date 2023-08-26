@@ -342,9 +342,9 @@ def train(data_path: str, model_name: "SwapIt", new_model=False, saved_models_di
                 first_run = False
                 plt.ioff()
                 fake = decoder_src(inter(encoder(target_im_dst)))
-                result_image = draw_results(reconstruct_im_src, target_im_src, reconstruct_im_dst, target_im_dst, fake,
-                                            mean_loss_src, mean_loss_dst)
-                cv2.imshow(f'results', result_image)
+                # result_image = draw_results(reconstruct_im_src, target_im_src, reconstruct_im_dst, target_im_dst, fake,
+                #                             mean_loss_src, mean_loss_dst)
+                # cv2.imshow(f'results', result_image)
                 cv2.waitKey(1)
 
             k = cv2.waitKey(1)
@@ -365,9 +365,9 @@ def train(data_path: str, model_name: "SwapIt", new_model=False, saved_models_di
                 break
             elif k == ord('r'):
                 fake = decoder_src(inter(encoder(target_im_dst)))
-                result_image = draw_results(reconstruct_im_src, target_im_src, reconstruct_im_dst, target_im_dst, fake,
-                                            mean_loss_src, mean_loss_dst)
-                cv2.imshow('results', result_image)
+                # result_image = draw_results(reconstruct_im_src, target_im_src, reconstruct_im_dst, target_im_dst, fake,
+                #                             mean_loss_src, mean_loss_dst)
+                # cv2.imshow('results', result_image)
                 cv2.waitKey(1)
 
         mean_loss_src.append(mean_epoch_loss_src.mean())
