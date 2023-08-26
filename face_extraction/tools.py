@@ -34,8 +34,8 @@ def extract_frames_from_video(video_path: Union[str, Path], output_folder: Union
 
         extract_frame_counter += 1
 
-        print(f"{saved_frame_counter} of {extract_frame_counter} frames saved successfully.")
-        video_capture.release()
+    print(f"{saved_frame_counter} of {extract_frame_counter} frames saved successfully.")
+    video_capture.release()
 
 
 def extract_align_face_from_img(input_dir: Union[str, Path], desired_face_width: int = 256) -> None:
