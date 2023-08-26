@@ -1,0 +1,28 @@
+device: cuda
+model:
+  image_shape: 96
+  learning_rate: 1e-4
+  batch_size: 32
+transform_args:
+  rotation_range: 10
+  zoom_range: 0.05
+  shift_range: 0.05
+  random_flip: 0.5
+landmark:
+  model_path: "models/face_landmarker.task"
+  url_path: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task"
+detection:
+  model_path: "models/face_detection_yunet_2023mar.onnx"
+  url_path: "https://github.com/opencv/opencv_zoo/blob/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx"
+main:
+  extract_and_align_src: True
+  extract_and_align_dst: True
+  train: True
+  eval_video: False
+  eval_camera: False
+  model_name: "SwapIt"
+  checkpoint: True
+  data_root: "./data"
+
+
+
