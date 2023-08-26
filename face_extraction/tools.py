@@ -45,9 +45,7 @@ def extract_align_face_from_img(input_dir: Union[str, Path], desired_face_width:
         rmtree(output_dir_)
     output_dir_.mkdir()
 
-    random_image_path = random.choice(
-        [x for x in os.listdir(input_dir_) if os.path.isfile(os.path.join(input_dir_, x))])
-    image = cv2.imread(str(random_image_path))
+    image = cv2.imread(str(input_dir / '00000.jpg'))
     image_height = image.shape[0]
     image_width = image.shape[1]
 
