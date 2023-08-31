@@ -54,7 +54,7 @@ def random_warp(image):
     map_y = map_x.T
 
     map_x = map_x + np.random.normal(size=(5, 5), scale=5 * height / 256)
-    map_y = map_y = np.random.normal(size=(5, 5), scale=5 * height / 256)
+    map_y = map_y + np.random.normal(size=(5, 5), scale=5 * height / 256)
 
     interp_map_x = cv2.resize(map_x, (int(width / 2 * (1 + 0.25)), int(height / 2 * (1 + 0.25))))[
                    int(width / 2 * 0.25 / 2):int(width / 2 * (1 + 0.25) - width / 2 * 0.25 / 2),

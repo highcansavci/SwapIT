@@ -307,6 +307,11 @@ def train(data_path: str, model_name: "SwapIt", new_model=False, saved_models_di
     while run:
         epoch += 1
         for idx, (warp_im_src, target_im_src, warp_im_dst, target_im_dst) in enumerate(data_loader):
+            # normalize
+            warp_im_src /= 255.
+            target_im_src /= 255.
+            warp_im_dst /= 255.
+            target_im_dst /= 255.
             # source image
             latent_sc = inter(encoder(warp_im_src))
             reconstruct_im_src = decoder_src(latent_sc)
