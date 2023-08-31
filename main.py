@@ -1,6 +1,7 @@
 from pathlib import Path
 import face_extraction.tools as fet
 import model.faceswap_model as fs
+import model.faceswap_model_gpu as fsg
 from inference.generate_video import generate_video
 from inference.generate_camera import generate_camera
 from config.config import Config
@@ -34,7 +35,8 @@ if extract_and_align_dst:
     fet.extract_align_face_from_img(input_dir=dst_processing_folder, desired_face_width=256)
 
 if train:
-    fs.train(str(data_root.absolute()), model_name, new_model, saved_models_dir='saved_model')
+    fsg.train(str(data_root.absolute()), model_name, new_model, saved_models_dir='saved_model')
+    # fs.train(str(data_root.absolute()), model_name, new_model, saved_models_dir='saved_model')
 
 if eval_video:
     generate_video(dst_processing_folder, model_name, saved_models_dir='saved_model')

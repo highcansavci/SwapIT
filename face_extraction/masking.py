@@ -21,7 +21,7 @@ class FaceMasking:
         base_options = python_mp.BaseOptions(model_asset_path=str(landmarks_model_path))
         options = vision.FaceLandmarkerOptions(base_options=base_options,
                                                output_face_blendshapes=False,
-                                               output_facia_transformation_matrixes=False,
+                                               output_facial_transformation_matrixes=False,
                                                num_faces=1)
         self.detector = vision.FaceLandmarker.create_from_options(options)
 

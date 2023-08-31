@@ -268,9 +268,9 @@ def train(data_path: str, model_name: "SwapIt", new_model=False, saved_models_di
     mean_loss_src = []
     mean_loss_dst = []
 
-    if not new_model and (saved_models_dir_ / f'{model_name}.pth').exists():
-        print("Loading Pretrained Model...")
-        saved_model = torch.load(str(saved_models_dir_ / f'{model_name}.pth'))
+    if not new_model and (saved_models_dir_.absolute() / f'{model_name}.pth').exists():
+        print(f"Loading Pretrained Model...: {saved_models_dir_.absolute() / f'{model_name}.pth'}")
+        saved_model = torch.load(str(saved_models_dir_.absolute() / f'{model_name}.pth'))
         epoch = saved_model["epoch"]
     else:
         saved_model = {}
@@ -338,38 +338,30 @@ def train(data_path: str, model_name: "SwapIt", new_model=False, saved_models_di
             mean_epoch_loss_src[idx] = loss_src
             mean_epoch_loss_dst[idx] = loss_dst
 
+            print(f"epoch: {epoch}, src_loss: {loss_src}, dst_loss: {loss_dst}")
+
             if first_run:
                 first_run = False
                 plt.ioff()
                 fake = decoder_src(inter(encoder(target_im_dst)))
-                result_image = draw_results(reconstruct_im_src, target_im_src, reconstruct_im_dst, target_im_dst, fake,
-                                            mean_loss_src, mean_loss_dst)
-                cv2.imshow(f'results', result_image)
-                cv2.waitKey(1)
 
-            k = cv2.waitKey(1)
-            if k == ord('q'):
-                saved_model['epoch'] = epoch
-                saved_model['encoder'] = encoder.state_dict()
-                saved_model['inter'] = inter.state_dict()
-                saved_model['decoder_src'] = decoder_src.state_dict()
-                saved_model['decoder_dst'] = decoder_dst.state_dict()
-                saved_model['optimizer_encoder'] = optim_encoder.state_dict()
-                saved_model['optimizer_decoder_src'] = optim_decoder_src.state_dict()
-                saved_model['optimizer_decoder_dst'] = optim_decoder_dst.state_dict()
-                saved_model['mean_loss_src'] = mean_loss_src
-                saved_model['mean_loss_dst'] = mean_loss_dst
-                saved_models_dir_.mkdir(exist_ok=True, parents=True)
-                torch.save(saved_model, str(saved_models_dir_ / f'{model_name}.pth'))
-                run = False
-                break
-            elif k == ord('r'):
-                fake = decoder_src(inter(encoder(target_im_dst)))
-                result_image = draw_results(reconstruct_im_src, target_im_src, reconstruct_im_dst, target_im_dst, fake,
-                                            mean_loss_src, mean_loss_dst)
-                cv2.imshow('results', result_image)
-                cv2.waitKey(1)
+        if epoch % 100 == 0:
+            saved_model['epoch'] = epoch
+            saved_model['encoder'] = encoder.state_dict()
+            saved_model['inter'] = inter.state_dict()
+            saved_model['decoder_src'] = decoder_src.state_dict()
+            saved_model['decoder_dst'] = decoder_dst.state_dict()
+            saved_model['optimizer_encoder'] = optim_encoder.state_dict()
+            saved_model['optimizer_decoder_src'] = optim_decoder_src.state_dict()
+            saved_model['optimizer_decoder_dst'] = optim_decoder_dst.state_dict()
+            saved_model['mean_loss_src'] = mean_loss_src
+            saved_model['mean_loss_dst'] = mean_loss_dst
+            saved_models_dir_.mkdir(exist_ok=True, parents=True)
+            torch.save(saved_model, str(saved_models_dir_ / f'{model_name}.pth'))
+            print(f"Model saved epoch: {epoch}")
+
+        elif epoch % 10000 == 0:
+            break
 
         mean_loss_src.append(mean_epoch_loss_src.mean())
         mean_loss_dst.append(mean_epoch_loss_dst.mean())
-    cv2.destroyAllWindows()

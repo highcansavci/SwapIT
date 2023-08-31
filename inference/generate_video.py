@@ -26,7 +26,7 @@ def generate_video(dst_frames_path, model_name="SwapIt", saved_models_dir="saved
     inter = Inter().to(device)
     decoder = Decoder().to(device)
 
-    saved_model = torch.load(model_path)
+    saved_model = torch.load(model_path, map_location=torch.device(device))
     encoder.load_state_dict(saved_model['encoder'])
     inter.load_state_dict(saved_model['inter'])
     decoder.load_state_dict(saved_model['decoder_src'])
