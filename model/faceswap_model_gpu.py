@@ -216,8 +216,8 @@ def sdsim(first_image, second_image, window_size=11):
     c3 = c2 / 2
 
     luminosity_metric = (2 * mu_cov + c1) / (mu1_squared + mu2_squared + c1)
-    contrast_metric = (2 * torch.sqrt(sigma1_squared * sigma2_squared) + c2) / (sigma1_squared + sigma2_squared + c2)
-    structure_metric = (sigma_cov + c3) / (torch.sqrt(sigma1_squared * sigma2_squared) + c3)
+    contrast_metric = (2 * torch.sqrt(sigma1_squared * sigma2_squared + eps) + c2) / (sigma1_squared + sigma2_squared + c2)
+    structure_metric = (sigma_cov + c3) / (torch.sqrt(sigma1_squared * sigma2_squared + eps) + c3)
 
     ssim = luminosity_metric * contrast_metric * structure_metric
     dssim = (1 - ssim.mean()) / 2
@@ -248,6 +248,7 @@ def draw_results(reconstruct_src, target_src, reconstruct_dst, target_dst, fake,
 
 
 def train(data_path: str, model_name: "SwapIt", new_model=False, saved_models_dir="saved_model"):
+    torch.autograd.set_detect_anomaly(True)
     saved_models_dir_ = Path(saved_models_dir)
     learning_rate = float(config_args.config["model"]["learning_rate"])
     device = config_args.config["device"]
