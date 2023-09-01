@@ -141,7 +141,7 @@ class Inter(nn.Module):
     def __init__(self):
         super(Inter, self).__init__()
         self.inter = nn.Sequential(
-            WSLinear(18432, 128),
+            WSLinear(2 * config_args.config["model"]["image_shape"] * config_args.config["model"]["image_shape"], 128),
             nn.BatchNorm1d(128),
             WSLinear(128, 1152),
             nn.BatchNorm1d(1152),

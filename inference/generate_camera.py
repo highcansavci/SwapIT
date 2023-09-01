@@ -14,7 +14,7 @@ config_args = Config()
 def generate_camera(model_name="SwapIt", saved_models_dir="saved_model"):
     model_path = Path(saved_models_dir) / f'{model_name}.pth'
 
-    face_extractor = FaceExtractor(640, config_args)
+    face_extractor = FaceExtractor((640, 480), config_args)
     face_masker = FaceMasking(config_args)
 
     device = config_args.config["device"]
@@ -23,12 +23,13 @@ def generate_camera(model_name="SwapIt", saved_models_dir="saved_model"):
     inter = Inter().to(device)
     decoder = Decoder().to(device)
 
-    saved_model = torch.load(model_path)
+    saved_model = torch.load(model_path, map_location=torch.device(device))
     encoder.load_state_dict(saved_model['encoder'])
     inter.load_state_dict(saved_model['inter'])
     decoder.load_state_dict(saved_model['decoder_src'])
 
     model = torch.nn.Sequential(encoder, inter, decoder)
+    model.eval()
     win_name = 'DeepFake'
 
     cap = cv2.VideoCapture(0)

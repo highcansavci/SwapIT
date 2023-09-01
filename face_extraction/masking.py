@@ -26,16 +26,25 @@ class FaceMasking:
         self.detector = vision.FaceLandmarker.create_from_options(options)
 
     def get_mask(self, image):
-        im_mp = mp.Image(image_format=mp.ImageFormat.SRGB, data=image.astype(np.uint8).copy())
-        detection_result = self.detector.detect(im_mp)
+        with mp.solutions.face_mesh.FaceMesh(
+            max_num_faces=1,
+            refine_landmarks=True,
+            min_detection_confidence=0.0,
+            min_tracking_confidence=0.0
+        ) as face_mesh:
+            img = image.astype(np.uint8).copy()
+            detection_result = face_mesh.process(img)
+            mask = np.zeros(image.shape[:2], dtype=np.uint8)
+            if detection_result.multi_face_landmarks is None:
+                print("No landmark detected.")
+                return np.ones(image.shape[:2], dtype=np.uint8)
+            x = np.array([landmark.x * image.shape[1] for landmark in detection_result.multi_face_landmarks[0].landmark], dtype=np.float32)
+            y = np.array([landmark.y * image.shape[0] for landmark in detection_result.multi_face_landmarks[0].landmark], dtype=np.float32)
 
-        x = np.array([landmark.x * image.shape[1] for landmark in detection_result.face_landmarks[0]], dtype=np.float32)
-        y = np.array([landmark.y * image.shape[0] for landmark in detection_result.face_landmarks[0]], dtype=np.float32)
+            hull = np.round(np.squeeze(cv2.convexHull(np.column_stack((x, y))))).astype(np.int32)
 
-        hull = np.round(np.squeeze(cv2.convexHull(mp.column_stack((x, y))))).astype(np.int32)
-        mask = np.zeros(image.shape[:2], dtype=np.uint8)
-        mask = cv2.fillConvexPoly(mask, hull, 255)
-        kernel = np.ones((7, 7), np.uint8)
-        mask = cv2.erode(mask, kernel)
+            mask = cv2.fillConvexPoly(mask, hull, 255)
+            kernel = np.ones((7, 7), np.uint8)
+            mask = cv2.erode(mask, kernel)
 
         return mask

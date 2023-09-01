@@ -1,4 +1,4 @@
-device: cuda
+device: cpu
 model:
   image_shape: 96
   learning_rate: 1e-4
@@ -15,10 +15,10 @@ detection:
   model_path: "models/face_detection.onnx"
   url_path: "https://github.com/opencv/opencv_zoo/blob/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx"
 main:
-  extract_and_align_src: True
-  extract_and_align_dst: True
-  train: True
-  eval_video: False
+  extract_and_align_src: False
+  extract_and_align_dst: False
+  train: False
+  eval_video: True
   eval_camera: False
   model_name: "SwapIt"
   checkpoint: True

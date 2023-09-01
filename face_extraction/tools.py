@@ -118,8 +118,5 @@ class FaceExtractor:
         width = desired_face_width
         y_top = (eyes_center[1] - left_eye_desired_coord[1] * desired_face_height).astype(int)
         height = desired_face_height
-        face = image[y_top:y_top+height, x_left:x_left+width]
+        face = image[y_top:y_top + height, x_left:x_left + width]
         return face, [x_left, y_top, width, height]
-
-
-

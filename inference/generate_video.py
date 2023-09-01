@@ -5,7 +5,7 @@ import cv2
 import torch
 from face_extraction.tools import FaceExtractor
 from face_extraction.masking import FaceMasking
-from model.faceswap_model import Encoder, Inter, Decoder
+from model.faceswap_model_gpu import Encoder, Inter, Decoder
 from config.config import Config
 
 config_args = Config()
@@ -32,6 +32,7 @@ def generate_video(dst_frames_path, model_name="SwapIt", saved_models_dir="saved
     decoder.load_state_dict(saved_model['decoder_src'])
 
     model = torch.nn.Sequential(encoder, inter, decoder)
+    model.eval()
 
     frames_list = sorted(dst_frames_path_.glob("*.jpg"))
     for idx, frame_path in enumerate(frames_list, 1):
@@ -39,6 +40,7 @@ def generate_video(dst_frames_path, model_name="SwapIt", saved_models_dir="saved
         frame = cv2.imread(str(frame_path))
         retval, face = face_extractor.detect(frame)
         if face is None:
+            print("Face not found.")
             result_video.write(frame)
             continue
         face_image, face = face_extractor.extract(frame, face[0])
@@ -47,9 +49,11 @@ def generate_video(dst_frames_path, model_name="SwapIt", saved_models_dir="saved
         fic_torch = torch.tensor(face_image_cropped / 255., dtype=torch.float32).permute(2, 0, 1).unsqueeze(0).to(device)
         generated_face_torch = model(fic_torch)
         generated_face = (generated_face_torch.squeeze().permute(1, 2, 0).detach().cpu().numpy() * 255).astype(np.uint8)
-
         mask_origin = face_masker.get_mask(face_image_cropped)
         mask_fake = face_masker.get_mask(generated_face)
+
+        result_video.write(mask_origin)
+        result_video.write(mask_fake)
 
         origin_moments = cv2.moments(mask_origin)
         cx = np.round(origin_moments['m10'] / origin_moments['m00']).astype(int)
