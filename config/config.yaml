@@ -18,8 +18,8 @@ main:
   extract_and_align_src: False
   extract_and_align_dst: False
   train: False
-  eval_video: True
-  eval_camera: False
+  eval_video: False
+  eval_camera: True
   model_name: "SwapIt"
   checkpoint: True
   data_root: "./data"

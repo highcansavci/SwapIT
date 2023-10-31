@@ -43,12 +43,14 @@ def generate_camera(model_name="SwapIt", saved_models_dir="saved_model"):
         if face is None:
             cv2.imshow(win_name, frame)
             continue
-        face_image, face = face_extractor.extract(frame, face[0])
+        # Yüzü giydirmeye yarıyor
+        face_image, face = face_extractor.extract(frame, face[0], desired_face_width=240)
         face_image = face_image[..., ::-1].copy()
         face_image_cropped = cv2.resize(face_image, (config_image_size, config_image_size))
         fic_torch = torch.tensor(face_image_cropped / 255., dtype=torch.float32).permute(2, 0, 1).unsqueeze(0).to(
             device)
         generated_face_torch = model(fic_torch)
+
         generated_face = (generated_face_torch.squeeze().permute(1, 2, 0).detach().cpu().numpy() * 255).astype(np.uint8)
 
         mask_origin = face_masker.get_mask(face_image_cropped)
@@ -62,13 +64,11 @@ def generate_camera(model_name="SwapIt", saved_models_dir="saved_model"):
             output_face = cv2.seamlessClone(generated_face, face_image_cropped, mask_fake, (cx, cy), cv2.NORMAL_CLONE)
         except:
             print("Skip")
-            cv2.imshow(win_name, frame)
             continue
 
         fake_face_image = cv2.resize(output_face, (face_image.shape[1], face_image.shape[0]))
         fake_face_image = fake_face_image[..., ::-1]
         frame[face[1]:face[1] + face[3], face[0]:face[0] + face[2]] = fake_face_image
-
         cv2.imshow(win_name, frame)
         key = cv2.waitKey(1)
         if key == 27:
